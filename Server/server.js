@@ -64,7 +64,7 @@
         res.status(200).json({"Message":"Signup Succesfully Completed"}); // Send the products as a response
         } catch (error) {
             console.error(error); // Log the error for debugging
-            res.status(500).json({ message: "Internal server error" }); // Send an error response
+            res.status(500).json({ message: "Internal server error......!" }); // Send an error response
         }
     });
 
