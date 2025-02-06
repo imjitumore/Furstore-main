@@ -61,7 +61,7 @@ export const ProductsDetails = ({ data , setdataa ,dataa}) => {
     console.log(user);
     try {
       const response = await fetch(
-        `http://localhost:4500/api/wishlist/${user.email}`,
+        `https://furstorebackend.onrender.com/api/wishlist/${user.email}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },

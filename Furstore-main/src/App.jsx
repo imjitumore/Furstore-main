@@ -55,7 +55,7 @@ function App() {
   
     useEffect(() => {
       const getProducts = async () => {
-        const response = await fetch("http://localhost:4500/api/getProducts");
+        const response = await fetch("https://furstorebackend.onrender.com/api/getProducts");
         const result = await response.json();
         setData(result.products);
       };

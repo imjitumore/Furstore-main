@@ -129,7 +129,7 @@ function WishList() {
     console.log(user)
     if (user && user.email ){
       fetch(
-        `http://localhost:4500/api/getWishlist/${user.email}`
+        `https://furstorebackend.onrender.com/api/getWishlist/${user.email}`
       )
         .then((response) => {
           return response.json();
@@ -204,7 +204,7 @@ function ChangePassword() {
 
     try {
       const response = await fetch(
-        `https://anime-com-backend.onrender.com/api/changepassword/${userId}`,
+        `https://furstorebackend.onrender.com/api/changepassword/${userId}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
