@@ -1,0 +1,66 @@
+[
+    {
+        "id":"1",
+        "image":"../assets/bigamet1.jpg",
+        "name":"Amet1",
+        "price":"$98.23",
+        "discription":"quia et suscipit\nsuscipit recusandae consequuntur expedita et cum nreprehendereniet architecto",
+        "Tags":"13.7’ x 6.3' x 4’, 23.7’ x 12.3' x 8’, White",
+        "Category":"Bathroom, Bedroom, Bookshelf, Clocks, Home page, Living Room, Planter, Sofa, Tables",
+        "Quantity":"5"
+    }
+    ,
+    {
+        "id":"2",
+        "image":"../assets/bigchair1.jpg",
+        "name":"Chair1",
+        "price":"$200.23",
+        "discription":"quia et suscipit\nsuscipit recusandae consequuntur expedita et cum nreprehendereniet architecto",
+        "Tags":"13.7’ x 6.3' x 4’, 23.7’ x 12.3' x 8’, White",
+        "Category":"Bathroom, Bedroom, Bookshelf, Clocks, Home page, Living Room, Planter, Sofa, Tables",
+        "Quantity":"8"
+    }
+    ,
+    {
+        "id":"3",
+        "image":"../assets/bigflowerpot1.jpg",
+        "name":"Flower pot1",
+        "price":"$70.23",
+        "discription":"quia et suscipit\nsuscipit recusandae consequuntur expedita et cum nreprehendereniet architecto",
+        "Tags":"13.7’ x 6.3' x 4’, 23.7’ x 12.3' x 8’, White",
+        "Category":"Bathroom, Bedroom, Bookshelf, Clocks, Home page, Living Room, Planter, Sofa, Tables",
+        "Quantity":"4"
+    }
+    ,
+    {
+        "id":"4",
+        "image":"../assets/bigclock1.jpg",
+        "name":"Clock1",
+        "price":"$120.23",
+        "discription":"quia et suscipit\nsuscipit recusandae consequuntur expedita et cum nreprehendereniet architecto",
+        "Tags":"13.7’ x 6.3' x 4’, 23.7’ x 12.3' x 8’, White",
+        "Category":"Bathroom, Bedroom, Bookshelf, Clocks, Home page, Living Room, Planter, Sofa, Tables",
+        "Quantity":"7"
+    }
+    ,    {
+        "id":"5",
+        "image":"../assets/bigpot1.jpg",
+        "name":"Pot1",
+        "price":"$98.23",
+        "discription":"quia et suscipit\nsuscipit recusandae consequuntur expedita et cum nreprehendereniet architecto",
+        "Tags":"13.7’ x 6.3' x 4’, 23.7’ x 12.3' x 8’, White",
+        "Category":"Bathroom, Bedroom, Bookshelf, Clocks, Home page, Living Room, Planter, Sofa, Tables",
+        "Quantity":"5"
+    }
+    ,
+    {
+        "id":"6",
+        "image":"../assets/bigcum1.jpg",
+        "name":"Cum1",
+        "price":"$200.23",
+        "discription":"quia et suscipit\nsuscipit recusandae consequuntur expedita et cum nreprehendereniet architecto",
+        "Tags":"13.7’ x 6.3' x 4’, 23.7’ x 12.3' x 8’, White",
+        "Category":"Bathroom, Bedroom, Bookshelf, Clocks, Home page, Living Room, Planter, Sofa, Tables",
+        "Quantity":"8"
+    }
+]
