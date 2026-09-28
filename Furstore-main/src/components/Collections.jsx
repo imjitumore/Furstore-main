@@ -113,49 +113,69 @@ function Stocks() {
 }
 
 function Allproducts(props) {
-  const [value, setVal] = useState();
+  const [value, setVal] = useState(1);
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
-      behavior: "smooth", // Optional: Adds smooth scrolling effect
+      behavior: "smooth",
     });
   };
+
+  const layouts = {
+    0: "grid grid-cols-1 gap-4",
+    1: "grid grid-cols-2 sm:grid-cols-4 gap-4",
+    2: "grid grid-cols-2 sm:grid-cols-3 gap-4",
+    3: "grid grid-cols-2 sm:grid-cols-5 gap-4",
+  };
+
   return (
     <>
-      <div className="stucture" >
+      <div className="stucture">
         <div className="sorted_grid flex items-center justify-between pr-10">
           <select className="sel py-3 px-3 sm:mx-14 mx-1 my-4">
             <option value="">Sort By featured</option>
           </select>
           <div className="grid_boxes flex sm:text-3xl text-xl gap-3">
             <TfiLayoutGrid4Alt
-              onClick={() => {
-                setVal(1);
-              }}
+              className={value === 1 ? "text-[#387581]" : "text-black"}
+              onClick={() => setVal(1)}
             />
-            <BsFillGrid3X3GapFill onClick={() => setVal(3)} />
-            <IoGrid onClick={() => setVal(2)} />
-            <CiGrid31 onClick={() => setVal(0)} />
+            <BsFillGrid3X3GapFill
+              className={value === 3 ? "text-[#387581]" : "text-black"}
+              onClick={() => setVal(3)}
+            />
+            <IoGrid
+              className={value === 2 ? "text-[#387581]" : "text-black"}
+              onClick={() => setVal(2)}
+            />
+            <CiGrid31
+              className={value === 0 ? "text-[#387581]" : "text-black"}
+              onClick={() => setVal(0)}
+            />
           </div>
         </div>
+
         <div
-          className="grid sm:grid-cols-5 grid-cols-2" onClick={scrollToTop}
+          className={layouts[value] || layouts[1]}
+          onClick={scrollToTop}
         >
           {props.data.map((val) => {
-            return(
-            <Link to={`/productsdetails/${val.name}`} key={val.id}>
-              <Arrial_card
-                image={val.image}
-                name={val.name}
-                price={val.price}
-              />
-            </Link>
-          )})}
+            return (
+              <Link to={`/productsdetails/${val.name}`} key={val.id}>
+                <Arrial_card
+                  image={val.image}
+                  name={val.name}
+                  price={val.price}
+                  layout={value}
+                />
+              </Link>
+            );
+          })}
         </div>
       </div>
     </>
   );
-};
+}
 
 function Tags()
 {

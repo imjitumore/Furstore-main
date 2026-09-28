@@ -30,6 +30,10 @@ export const ProductsDetails = ({ data , setdataa ,dataa}) => {
   const [product, setProduct] = useState(null);
   const [val, setVal] = useState(null);
   const [value,setValue]= useState(false)
+  const [reviews, setReviews] = useState([]);
+  const [formVisible, setFormVisible] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(3);
+  const [reviewForm, setReviewForm] = useState({ rating: 5, comment: "" });
  
   function getData(item)
   {
@@ -50,10 +54,63 @@ export const ProductsDetails = ({ data , setdataa ,dataa}) => {
     }
   }, [data, name, val]);
 
+  useEffect(() => {
+    if (!product?.name) return;
+
+    fetch(`http://localhost:5000/api/products/${encodeURIComponent(product.name)}/reviews`)
+      .then((res) => res.json())
+      .then((data) => setReviews(Array.isArray(data) ? data : []))
+      .catch((err) => console.error("Failed to fetch product reviews:", err));
+  }, [product?.name]);
+
   if (!product) {
     return <p>Loading...</p>;
   }
 
+  async function handleReviewSubmit(e) {
+    e.preventDefault();
+
+    const storedUser = JSON.parse(localStorage.getItem("user") || "null");
+    if (!storedUser) {
+      alert("Please login to add a review.");
+      return;
+    }
+
+    if (!reviewForm.comment.trim()) {
+      alert("Please write a review comment.");
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/products/${encodeURIComponent(product.name)}/reviews`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            reviewerName: `${storedUser.firstName || ""} ${storedUser.lastName || ""}`.trim() || storedUser.email,
+            reviewerEmail: storedUser.email,
+            rating: Number(reviewForm.rating),
+            comment: reviewForm.comment.trim(),
+          }),
+        }
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Unable to save review");
+      }
+
+      setReviews(Array.isArray(result) ? result : []);
+      setReviewForm({ rating: 5, comment: "" });
+      setVisibleCount(3);
+      setFormVisible(false);
+    } catch (error) {
+      console.error("Error submitting review:", error);
+      alert(error.message || "Unable to save review.");
+    }
+  }
 
   async function wishList() {
     console.log("function called");
@@ -61,7 +118,7 @@ export const ProductsDetails = ({ data , setdataa ,dataa}) => {
     console.log(user);
     try {
       const response = await fetch(
-        `https://furstorebackend.onrender.com/api/wishlist/${user.email}`,
+        `http://localhost:5000/api/wishlist/${user.email}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -191,7 +248,16 @@ export const ProductsDetails = ({ data , setdataa ,dataa}) => {
         />
       </div>
 
-      <CustomerView />
+      <CustomerView
+        reviews={reviews}
+        visibleCount={visibleCount}
+        setVisibleCount={setVisibleCount}
+        formVisible={formVisible}
+        setFormVisible={setFormVisible}
+        reviewForm={reviewForm}
+        setReviewForm={setReviewForm}
+        onSubmitReview={handleReviewSubmit}
+      />
       <RelatedProducts />
       <hr />
       <Showcase />
@@ -200,7 +266,10 @@ export const ProductsDetails = ({ data , setdataa ,dataa}) => {
   );
 };
 
-function CustomerView() {
+function CustomerView({ reviews, visibleCount, setVisibleCount, formVisible, setFormVisible, reviewForm, setReviewForm, onSubmitReview }) {
+  const visibleReviews = reviews.slice(0, visibleCount);
+  const hasMoreReviews = reviews.length > visibleReviews.length;
+
   return (
     <>
       <div className="bg-[#F1F1F1] sm:py-20 py-6 sm:px-40 px-10 ">
@@ -212,10 +281,87 @@ function CustomerView() {
           <FontAwesomeIcon icon={faStar} />
           <FontAwesomeIcon icon={faStar} />
         </div>
-        <p className="text-sm">Be the first to write a review</p>
-        <button className="text-sm text-white py-3 sm:px-24 px-10 rounded-md font-bold my-3 bg-[#387581] transition-all hover:bg-black duration-500">
-          Write A Review
-        </button>
+        <p className="text-sm">{reviews.length ? `${reviews.length} review(s) for this product` : "Be the first to write a review"}</p>
+
+        {!formVisible && (
+          <button
+            onClick={() => setFormVisible(true)}
+            className="text-sm text-white py-3 sm:px-24 px-10 rounded-md font-bold my-3 bg-[#387581] transition-all hover:bg-black duration-500"
+          >
+            Write A Review
+          </button>
+        )}
+
+        {formVisible && (
+          <form onSubmit={onSubmitReview} className="bg-white p-5 rounded-md shadow-sm my-5 max-w-2xl">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="font-semibold text-black">Your Rating:</span>
+              {[1, 2, 3, 4, 5].map((star) => (
+                <button
+                  type="button"
+                  key={star}
+                  onClick={() => setReviewForm((prev) => ({ ...prev, rating: star }))}
+                  className={star <= reviewForm.rating ? "text-[#Ffd700] text-xl" : "text-gray-300 text-xl"}
+                >
+                  ★
+                </button>
+              ))}
+            </div>
+
+            <textarea
+              value={reviewForm.comment}
+              onChange={(e) => setReviewForm((prev) => ({ ...prev, comment: e.target.value }))}
+              rows="4"
+              placeholder="Write your review about this product..."
+              className="w-full border border-gray-300 rounded-md p-3 text-black focus:outline-none focus:border-[#387581]"
+            />
+
+            <div className="flex gap-3 mt-4">
+              <button
+                type="submit"
+                className="text-sm text-white py-2 px-6 rounded-md font-bold bg-[#387581] hover:bg-black transition-all duration-500"
+              >
+                Submit Review
+              </button>
+              <button
+                type="button"
+                onClick={() => setFormVisible(false)}
+                className="text-sm text-black py-2 px-6 rounded-md font-bold border border-gray-300 bg-white"
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        )}
+
+        <div className="mt-8 space-y-5">
+          {visibleReviews.length === 0 ? (
+            <p className="text-gray-600">No reviews yet. Be the first to share your feedback.</p>
+          ) : (
+            visibleReviews.map((review, index) => (
+              <div key={`${review.reviewerName}-${review.createdAt || index}`} className="bg-white rounded-md p-4 shadow-sm">
+                <div className="flex items-center justify-between gap-3 mb-2">
+                  <p className="font-semibold text-black">{review.reviewerName}</p>
+                  <div className="text-[#Ffd700]">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <span key={star}>{star <= review.rating ? "★" : "☆"}</span>
+                    ))}
+                  </div>
+                </div>
+                <p className="text-sm text-gray-700">{review.comment}</p>
+              </div>
+            ))
+          )}
+
+          {hasMoreReviews && (
+            <button
+              onClick={() => setVisibleCount((prev) => prev + 3)}
+              className="mt-3 text-sm text-[#387581] font-semibold underline"
+            >
+              Show more reviews
+            </button>
+          )}
+        </div>
       </div>
     </>
   );

@@ -37,7 +37,7 @@ export const Signup = () => {
   };
 
   async function signup() {
-    const response = await fetch("https://furstorebackend.onrender.com/api/signup", {
+    const response = await fetch("http://localhost:5000/api/signup", {
       method: "POST",
       headers: { "Content-type": "application/json" },
       body: JSON.stringify({ email, password, fname, lname }),

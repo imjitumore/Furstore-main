@@ -20,7 +20,16 @@ function App() {
   const [user, setUser] = useState(() => {
     return JSON.parse(localStorage.getItem("user")) || null;
   });
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem("furstore-theme") || "light";
+  });
   const [authMessage, setAuthMessage] = useState("");
+
+  useEffect(() => {
+    document.body.classList.toggle("dark-theme", theme === "dark");
+    document.body.classList.toggle("light-theme", theme === "light");
+    localStorage.setItem("furstore-theme", theme);
+  }, [theme]);
 
   useEffect(() => {
     if (authMessage) {
@@ -55,7 +64,7 @@ function App() {
   
     useEffect(() => {
       const getProducts = async () => {
-        const response = await fetch("https://furstorebackend.onrender.com/api/getProducts");
+        const response = await fetch("http://localhost:5000/api/getProducts");
         const result = await response.json();
         setData(result.products);
       };
@@ -76,53 +85,54 @@ function App() {
 
 
   return (
+    <div className={theme === "dark" ? "dark-theme-app" : "light-theme-app"}>
+      <BrowserRouter>
+        <ToastContainer/>
+        {/* {authMessage && <div className="text-2xl font-bold  flex justify-center text-[red] py-2">{authMessage}</div>} */}
+        <Routes>
+          {/* Public Routes */}
+          <Route path="/" element={<Home />} />
+          <Route path="/collections" element={<Collections data={data} />} />
+          <Route path="/productsdetails/:name" element={<ProductsDetails data={data} setdataa={setDataa} dataa={dataa} />} />
+          <Route path="/contactus" element={<ContactUs />} />
+          <Route path="/blog" element={<Blog data={blog} />} />
+          <Route path="/blogdetails/:id" element={<BlogDetails data={blog} />} />
+          <Route path="/search" element={<Search />} />
+          <Route path="/cart" element={user ? <Cart dataa={dataa} /> : <Navigate to="/login" />} />
+          <Route path="/checkout" element={user ? <Checkout dataa={dataa} /> : <Navigate to="/login" />} />
 
-    <BrowserRouter>
-      <ToastContainer/>
-      {/* {authMessage && <div className="text-2xl font-bold  flex justify-center text-[red] py-2">{authMessage}</div>} */}
-      <Routes>
-        {/* Public Routes */}
-        <Route path="/" element={<Home />} />
-        <Route path="/collections" element={<Collections data={data} />} />
-         <Route path="/productsdetails/:name" element={<ProductsDetails data={data} setdataa={setDataa} dataa={dataa} />} />
-         <Route path="/contactus" element={<ContactUs />} />
-         <Route path="/blog" element={<Blog data={blog} />} />
-         <Route path="/blogdetails/:id" element={<BlogDetails data={blog} />} />
-         <Route path="/search" element={<Search />} />
-         <Route path="/cart" element={user ? <Cart dataa={dataa} /> : <Navigate to="/login" />} />
-         <Route path="/checkout" element={user ? <Checkout dataa={dataa} /> : <Navigate to="/login" />} />
+          {/* Protected Routes */}
+          <Route
+            path="/cart"
+            element={
+              <ProtectedRoute>
+                <Cart />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/checkout"
+            element={
+              <ProtectedRoute>
+                <Checkout />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard setUser={setUser} theme={theme} setTheme={setTheme} />
+              </ProtectedRoute>
+            }
+          />
 
-        {/* Protected Routes */}
-        <Route
-          path="/cart"
-          element={
-            <ProtectedRoute>
-              <Cart />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/checkout"
-          element={
-            <ProtectedRoute>
-              <Checkout />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <Dashboard setUser={setUser} />
-            </ProtectedRoute>
-          }
-        />
-
-        {/* Authentication */}
-        <Route path="/login" element={<Login setUser={setUser} />} />
-        <Route path="/signup" element={<Signup />} />
-      </Routes>
-    </BrowserRouter>
+          {/* Authentication */}
+          <Route path="/login" element={<Login setUser={setUser} />} />
+          <Route path="/signup" element={<Signup />} />
+        </Routes>
+      </BrowserRouter>
+    </div>
   );
 }
 

@@ -110,7 +110,7 @@ export function Arrial_card(props,{dataa , setdataa}) {
   const [val, setVal] = useState(false);
   useEffect(() => {
     setVal(1);
-  });
+  }, []);
 
   function getData(item)
   {
@@ -118,34 +118,38 @@ export function Arrial_card(props,{dataa , setdataa}) {
   }
 
   const [value, setValue] = useState(false);
+  const isListLayout = props.layout === 0;
+
   return (
     <>
       <div className="card_main px-1 w-full h-full">
-        <div className={`${val == 1 ? "GIRD" : ""} w-full h-full`}>
-          <div className="relative group">
+        <div className={`${val == 1 ? "GIRD" : ""} ${isListLayout ? "flex items-center gap-4 rounded-lg border border-gray-200 bg-white p-2" : "w-full h-full"}`}>
+          <div className={`${isListLayout ? "w-28 flex-shrink-0" : "relative group"}`}>
             <div className="flex justify-center items-center group overflow-hidden px-2">
               <img
-                className="center_img text-center relative group-hover:scale-125 transition-all duration-300 w-full"
+                className={`center_img text-center relative group-hover:scale-125 transition-all duration-300 ${isListLayout ? "w-full h-24 object-cover rounded-md" : "w-full"}`}
                 src={props.image}
                 alt={props.image}
               />
             </div>
-            <button
-            onClick={()=>setdataa()}
-              className={` absolute text-sm top-[3%] transition-all duration-500 bg-slate-900 text-white py-2 px-2 w-24 left-1/2 translate-x-[-50%] rounded-lg scale-0 group-hover:scale-100`}>
-              Add To Cart
-            </button>
+            {!isListLayout && (
+              <button
+                onClick={()=>setdataa()}
+                className={` absolute text-sm top-[3%] transition-all duration-500 bg-slate-900 text-white py-2 px-2 w-24 left-1/2 translate-x-[-50%] rounded-lg scale-0 group-hover:scale-100`}>
+                Add To Cart
+              </button>
+            )}
           </div>
-          <div className="py-1">
-            <div className="star text-center py-2 text-[#Ffd700] justify-center flex text-sm gap-1">
+          <div className={`${isListLayout ? "flex-1 text-left" : "py-1"}`}>
+            <div className={`star py-2 text-[#Ffd700] justify-center flex text-sm gap-1 ${isListLayout ? "justify-start" : "justify-center"}`}>
               <FontAwesomeIcon icon={faStar} />
               <FontAwesomeIcon icon={faStar} />
               <FontAwesomeIcon icon={faStar} />
               <FontAwesomeIcon icon={faStar} />
               <FontAwesomeIcon icon={faStarHalf} />{" "}
             </div>
-            <p className="card_texts text-center text-lg">{props.name}</p>
-            <p className="card_price text-center text-sm py-2">{props.price}</p>
+            <p className={`card_texts text-lg ${isListLayout ? "text-left" : "text-center"}`}>{props.name}</p>
+            <p className={`card_price text-sm py-2 ${isListLayout ? "text-left" : "text-center"}`}>{props.price}</p>
           </div>
         </div>
       </div>

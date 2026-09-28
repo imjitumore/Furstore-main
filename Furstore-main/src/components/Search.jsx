@@ -20,7 +20,7 @@ export const Search = () => {
 
   useEffect(() => {
     if (productName) {
-      fetch("https://furstorebackend.onrender.com/api/search", {
+      fetch("http://localhost:5000/api/search", {
         method: "POST",
         headers: { "Content-type": "application/json" },
         body: JSON.stringify({ name: productName }),

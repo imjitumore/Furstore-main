@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-mongoose.connect("mongodb+srv://jitendraumore99:0wy73T6HU7ahAkIL@animecom.ukiff.mongodb.net/Furstore", {
+mongoose.connect("mongodb+srv://jitendraumore99:YLpYH7o4r8xgLFM6@animecom.ukiff.mongodb.net/Furstore", {
     
 })
 .then(() => {

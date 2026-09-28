@@ -1,11 +1,13 @@
     const express = require("express");
     const app = express();
-    const port = 4500;
+    const port = 5000;
     const cors = require("cors");
     const productModel = require("./modules/productModel");
     const userModel = require("./modules/userModel");
     
 
+    console.log("Inside the login");
+    
     // Middleware
     app.use(cors());
     app.use(express.json()); 
@@ -20,6 +22,56 @@
             console.error(error); // Log the error for debugging
             res.status(500).json({ message: "Internal server error" }); // Send an error response
         }
+    });
+
+    app.get("/api/products/:name/reviews", async (req, res) => {
+      try {
+        const productName = decodeURIComponent(req.params.name);
+        const product = await productModel.findOne({ name: productName });
+
+        if (!product) {
+          return res.status(404).json({ message: "Product not found" });
+        }
+
+        return res.status(200).json(product.reviews || []);
+      } catch (error) {
+        console.error("Error fetching product reviews:", error);
+        return res.status(500).json({ message: "Error fetching reviews" });
+      }
+    });
+
+    app.post("/api/products/:name/reviews", async (req, res) => {
+      try {
+        const productName = decodeURIComponent(req.params.name);
+        const { reviewerName, reviewerEmail, rating, comment } = req.body;
+
+        if (!reviewerName || !comment || !rating) {
+          return res.status(400).json({ message: "Reviewer name, rating, and comment are required" });
+        }
+
+        const product = await productModel.findOne({ name: productName });
+
+        if (!product) {
+          return res.status(404).json({ message: "Product not found" });
+        }
+
+        const newReview = {
+          reviewerName,
+          reviewerEmail: reviewerEmail || "",
+          rating: Number(rating),
+          comment,
+          createdAt: new Date(),
+        };
+
+        product.reviews = product.reviews || [];
+        product.reviews.push(newReview);
+        await product.save();
+
+        return res.status(201).json(product.reviews);
+      } catch (error) {
+        console.error("Error adding product review:", error);
+        return res.status(500).json({ message: "Error adding review" });
+      }
     });
 
     app.post("/api/search",async (req, res) => {
@@ -43,7 +95,8 @@
     app.post("/api/signup", async (req, res) => {
         try {
             const {fname,lname,email,password,} = req.body
-
+            console.log(fname,lname,email,password);
+            
             if ( !fname || !lname || !email || !password ) {
                 return res.status(400).json({ message: "All fields are required" });
             }
@@ -109,17 +162,46 @@
 
     app.put("/api/wishlist/:email", async (req, res) => {
       try {
-        const data = await userModel.updateOne(
-          { email: req.params.email },
-          { $addToSet: { wishlist: req.body } } // Adds to wishlist only if it doesn’t already exist
+        const userEmail = req.params.email;
+        const product = req.body;
+
+        if (!userEmail) {
+          return res.status(400).json({ message: "Email is required" });
+        }
+
+        if (!product || !product.name) {
+          return res.status(400).json({ message: "Product data is required" });
+        }
+
+        const user = await userModel.findOne({ email: userEmail });
+
+        if (!user) {
+          return res.status(404).json({ message: "User not found" });
+        }
+
+        const alreadyExists = user.wishlist.some((item) => item.name === product.name);
+
+        if (alreadyExists) {
+          return res.status(200).json({
+            message: "Product already in wishlist",
+            wishlist: user.wishlist
+          });
+        }
+
+        const updatedUser = await userModel.findOneAndUpdate(
+          { email: userEmail },
+          { $push: { wishlist: product } },
+          { new: true }
         );
-        console.log("Data updated:", data); // Optional: Log the updated data
-        res.status(200).json({ message: "Added to wishlist" });
+
+        res.status(200).json({
+          message: "Added to wishlist",
+          wishlist: updatedUser.wishlist
+        });
       } catch (error) {
         console.error("Error adding to wishlist:", error);
         res.status(500).json({ error: "Failed to add to wishlist" });
       }
-      
     })
     
     app.get("/api/getWishlist/:email",async (req, res) => {
@@ -133,10 +215,10 @@
           }
       
           res.status(200).json(user.wishlist || []);
-          console.log("data",user.watchlist)
+          console.log("data", user.wishlist)
         } catch (error) {
-          console.error("Error fetching user watchlist:", error); // Log the error
-          res.status(500).json({ message: "Error fetching data", error }); // Handle errors
+          console.error("Error fetching user watchlist:", error);
+          res.status(500).json({ message: "Error fetching data", error });
         }
     })
     

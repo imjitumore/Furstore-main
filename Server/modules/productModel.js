@@ -20,30 +20,98 @@ const productSchema = new mongoose.Schema(
       },
       description: {
         type: String,
-        required: [true, "Product description is required"], // Validation: description is required
-        trim: true, // Remove extra spaces
+        default: "",
+        trim: true,
+      },
+      discription: {
+        type: String,
+        default: "",
+        trim: true,
       },
       tags: {
         type: String,
-        trim: true, // Ensure tags have no extra spaces
-        default: "", // Default value for tags
+        trim: true,
+        default: "",
+      },
+      Tags: {
+        type: String,
+        trim: true,
+        default: "",
       },
       category: {
         type: String,
-        required: [true, "Product category is required"], // Validation: category is required
+        default: "",
+        trim: true,
+      },
+      Category: {
+        type: String,
+        default: "",
         trim: true,
       },
       quantity: {
         type: Number,
-        required: [true, "Product quantity is required"], // Validation: quantity is required
-        min: [0, "Quantity must be a non-negative number"], // Quantity cannot be negative
-        default: 0, // Default value for quantity
+        min: [0, "Quantity must be a non-negative number"],
+        default: 0,
       },
+      Quantity: {
+        type: Number,
+        min: [0, "Quantity must be a non-negative number"],
+        default: 0,
+      },
+      reviews: [
+        {
+          reviewerName: {
+            type: String,
+            required: true,
+            trim: true,
+          },
+          reviewerEmail: {
+            type: String,
+            default: "",
+            trim: true,
+          },
+          rating: {
+            type: Number,
+            required: true,
+            min: 1,
+            max: 5,
+          },
+          comment: {
+            type: String,
+            required: true,
+            trim: true,
+          },
+          createdAt: {
+            type: Date,
+            default: Date.now,
+          },
+        },
+      ],
     },
     {
-      timestamps: true, // Automatically adds `createdAt` and `updatedAt` fields
+      timestamps: true,
     }
   );
+
+productSchema.pre("save", function (next) {
+  if (!this.description && this.discription) {
+    this.description = this.discription;
+  }
+
+  if (!this.tags && this.Tags) {
+    this.tags = this.Tags;
+  }
+
+  if (!this.category && this.Category) {
+    this.category = this.Category;
+  }
+
+  if (!this.quantity && this.Quantity !== undefined) {
+    this.quantity = this.Quantity;
+  }
+
+  next();
+});
 
 const productModel = mongoose.model("products",productSchema)
 module.exports = productModel
